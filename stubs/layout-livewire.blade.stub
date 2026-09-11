@@ -1,0 +1,122 @@
+@props([
+    /*
+    |--------------------------------------------------------------------------
+    | UomUI Page Direction
+    |--------------------------------------------------------------------------
+    |
+    | Available values:
+    |
+    | auto  = Detect direction automatically from the current Laravel locale.
+    | rtl   = Force Right-To-Left direction.
+    | ltr   = Force Left-To-Right direction.
+    |
+    */
+
+    'direction' => '{{UOMUI_DIRECTION}}',
+])
+
+@php
+    /*
+    |--------------------------------------------------------------------------
+    | Current Locale
+    |--------------------------------------------------------------------------
+    */
+
+    $uomuiLocale = app()->getLocale();
+
+    /*
+    |--------------------------------------------------------------------------
+    | RTL Locales
+    |--------------------------------------------------------------------------
+    */
+
+    $uomuiRtlLocales = [
+        'ar',
+        'fa',
+        'he',
+        'ur',
+    ];
+
+    $uomuiLanguage = strtolower(
+        preg_split('/[-_]/', $uomuiLocale)[0]
+    );
+
+    /*
+    |--------------------------------------------------------------------------
+    | Resolve Direction
+    |--------------------------------------------------------------------------
+    */
+
+    $uomuiResolvedDirection = match ($direction) {
+        'rtl' => 'rtl',
+        'ltr' => 'ltr',
+
+        default => in_array(
+            $uomuiLanguage,
+            $uomuiRtlLocales,
+            true
+        )
+            ? 'rtl'
+            : 'ltr',
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | Resolve UomUI Stylesheet
+    |--------------------------------------------------------------------------
+    */
+
+    $uomuiStylesheet = $uomuiResolvedDirection === 'rtl'
+        ? 'vendor/uomui/css/uomui.rtl.css'
+        : 'vendor/uomui/css/uomui.css';
+@endphp
+
+<!DOCTYPE html>
+
+<html
+    lang="{{ $uomuiLocale }}"
+    dir="{{ $uomuiResolvedDirection }}"
+>
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+    >
+
+    <meta
+        name="csrf-token"
+        content="{{ csrf_token() }}"
+    >
+
+    <title>
+        {{ $title ?? config('app.name', 'Laravel') }}
+    </title>
+
+    {{-- UomUI --}}
+    <link
+        rel="stylesheet"
+        href="{{ asset($uomuiStylesheet) }}"
+    >
+
+    {{-- Page specific styles --}}
+    @stack('styles')
+
+</head>
+
+<body>
+
+    {{ $slot }}
+
+    {{-- UomUI JavaScript --}}
+    <script
+        src="{{ asset('vendor/uomui/js/uomui.js') }}"
+    ></script>
+
+    {{-- Page specific scripts --}}
+    @stack('scripts')
+
+</body>
+</html>
