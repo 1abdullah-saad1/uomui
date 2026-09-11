@@ -1,0 +1,28 @@
+{
+  "name": "uomui",
+  "version": "0.0.1",
+  "description": "Reusable Bootstrap 5 Blade UI components for Laravel applications.",
+  "private": true,
+  "scripts": {
+    "build:css": "sass --load-path=node_modules resources/scss/uomui.scss dist/css/uomui.css --style=compressed",
+    "build:rtl": "rtlcss dist/css/uomui.css dist/css/uomui.rtl.css",
+    "build:js": "vite build",
+    "build": "npm run build:css && npm run build:rtl && npm run build:js"
+  },
+  "keywords": [
+    "laravel",
+    "blade",
+    "bootstrap",
+    "ui",
+    "components"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "bootstrap": "^5.3.8"
+  },
+  "devDependencies": {
+    "rtlcss": "^4.3.0",
+    "sass": "^1.104.0",
+    "vite": "^8.3.0"
+  }
+}

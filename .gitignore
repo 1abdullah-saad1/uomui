@@ -1,0 +1,31 @@
+# Root dependencies
+/node_modules/
+/vendor/
+
+# Environment files
+.env
+.env.*
+!/demo/.env.example
+
+# Demo dependencies
+/demo/node_modules/
+/demo/vendor/
+
+# Demo generated/cache files
+/demo/storage/logs/*
+/demo/storage/framework/cache/*
+/demo/storage/framework/sessions/*
+/demo/storage/framework/views/*
+/demo/bootstrap/cache/*.php
+
+# Published package assets inside demo
+/demo/public/vendor/uomui/
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
