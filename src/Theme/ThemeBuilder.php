@@ -301,8 +301,13 @@ class ThemeBuilder
 
         $scss[] = '';
 
-        $path = $this->packageRoot
-            . '/resources/scss/generated/_theme.scss';
+        $path = $this->path(
+            $this->packageRoot,
+            'resources',
+            'scss',
+            'generated',
+            '_theme.scss'
+        );
 
         File::ensureDirectoryExists(
             dirname($path)
@@ -332,8 +337,12 @@ class ThemeBuilder
      */
     protected function compileRtlCss(): void
     {
-        $source = $this->packageRoot
-            . '/dist/css/uomui.css';
+        $source = $this->path(
+            $this->packageRoot,
+            'dist',
+            'css',
+            'uomui.css'
+        );
 
         if (! File::exists($source)) {
             throw new RuntimeException(
@@ -355,7 +364,7 @@ class ThemeBuilder
         string $errorMessage
     ): void {
         $process = new Process(
-            ['npm', 'run', $script],
+            [$this->npmExecutable(), 'run', $script],
             $this->packageRoot
         );
 
@@ -388,8 +397,12 @@ class ThemeBuilder
         $published = [];
 
         foreach ($files as $file) {
-            $source = $this->packageRoot
-                . "/dist/css/{$file}";
+            $source = $this->path(
+                $this->packageRoot,
+                'dist',
+                'css',
+                $file
+            );
 
             if (! File::exists($source)) {
                 // Source map is optional.
@@ -402,8 +415,12 @@ class ThemeBuilder
                 );
             }
 
-            $destination = public_path(
-                "vendor/uomui/css/{$file}"
+            $destination = $this->path(
+                public_path(),
+                'vendor',
+                'uomui',
+                'css',
+                $file
             );
 
             File::ensureDirectoryExists(
@@ -426,8 +443,10 @@ class ThemeBuilder
      */
     protected function ensureRequirements(): void
     {
-        $packageJson = $this->packageRoot
-            . '/package.json';
+        $packageJson = $this->path(
+            $this->packageRoot,
+            'package.json'
+        );
 
         if (! File::exists($packageJson)) {
             throw new RuntimeException(
@@ -435,8 +454,10 @@ class ThemeBuilder
             );
         }
 
-        $nodeModules = $this->packageRoot
-            . '/node_modules';
+        $nodeModules = $this->path(
+            $this->packageRoot,
+            'node_modules'
+        );
 
         if (! File::isDirectory($nodeModules)) {
             throw new RuntimeException(
@@ -450,8 +471,11 @@ class ThemeBuilder
             );
         }
 
-        $sass = $this->packageRoot
-            . '/node_modules/sass';
+        $sass = $this->path(
+            $this->packageRoot,
+            'node_modules',
+            'sass'
+        );
 
         if (! File::isDirectory($sass)) {
             throw new RuntimeException(
@@ -459,8 +483,11 @@ class ThemeBuilder
             );
         }
 
-        $bootstrap = $this->packageRoot
-            . '/node_modules/bootstrap';
+        $bootstrap = $this->path(
+            $this->packageRoot,
+            'node_modules',
+            'bootstrap'
+        );
 
         if (! File::isDirectory($bootstrap)) {
             throw new RuntimeException(
@@ -468,8 +495,11 @@ class ThemeBuilder
             );
         }
 
-        $rtlCss = $this->packageRoot
-            . '/node_modules/rtlcss';
+        $rtlCss = $this->path(
+            $this->packageRoot,
+            'node_modules',
+            'rtlcss'
+        );
 
         if (! File::isDirectory($rtlCss)) {
             throw new RuntimeException(
@@ -499,5 +529,39 @@ class ThemeBuilder
                 "Empty theme configuration value [{$name}]."
             );
         }
+    }
+
+    /**
+     * Build an OS-safe path from segments.
+     */
+    protected function path(string ...$segments): string
+    {
+        $segments = array_values(array_filter(
+            $segments,
+            static fn ($segment) => $segment !== ''
+        ));
+
+        if ($segments === []) {
+            return '';
+        }
+
+        $path = rtrim(array_shift($segments), '/\\');
+
+        foreach ($segments as $segment) {
+            $path .= DIRECTORY_SEPARATOR
+                . trim($segment, '/\\');
+        }
+
+        return $path;
+    }
+
+    /**
+     * Resolve npm executable per OS.
+     */
+    protected function npmExecutable(): string
+    {
+        return DIRECTORY_SEPARATOR === '\\'
+            ? 'npm.cmd'
+            : 'npm';
     }
 }
