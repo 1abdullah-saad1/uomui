@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "build:css": "sass --load-path=node_modules resources/scss/uomui.scss dist/css/uomui.css --style=compressed",
-    "build:rtl": "rtlcss dist/css/uomui.css dist/css/uomui.rtl.css",
+    "build:rtl": "rtlcss --config .rtlcssrc dist/css/uomui.css dist/css/uomui.rtl.css",
     "build:js": "vite build",
     "build": "npm run build:css && npm run build:rtl && npm run build:js"
   },
